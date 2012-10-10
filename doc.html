@@ -177,8 +177,7 @@
 </ol></div><div class="section"><h3>Defining databases<a name="Defining_databases"></a></h3><p>The general syntax for defining the databases composing an HA-JDBC cluster is as follows:</p>
 <div class="source"><pre class="prettyprint linenums">&lt;ha-jdbc xmlns=&quot;urn:ha-jdbc:cluster:2.1&quot;&gt;
     &lt;cluster&gt;
-       &lt;database id=&quot;...&quot; weight=&quot;#&quot;&gt;
-         &lt;name&gt;...&lt;/name&gt;
+       &lt;database id=&quot;...&quot; location=&quot;...&quot; weight=&quot;#&quot;&gt;
          &lt;user&gt;...&lt;/user&gt;
          &lt;password&gt;...&lt;/password&gt;
          &lt;property name=&quot;...&quot;&gt;...&lt;/property&gt;
@@ -187,16 +186,15 @@
     &lt;/cluster&gt;
 &lt;/ha-jdbc&gt;
 </pre></div>
-<dl><dt>id</dt><dd>Uniquely identifies this database within the cluster.</dd><dt>weight</dt><dd>Defines the relative weight of this database node. See <a href="#balancer">Balancer</a> section for details.</dd><dt>name</dt><dd>In general, this describes the location of the database. For Driver-based clusters, this specifies the JDBC url of the database. For DataSource-based cluster, this specifies either:
+<dl><dt>id</dt><dd>Uniquely identifies this database within the cluster.</dd><dt>location</dt><dd>In general, this describes the location of the database. For Driver-based clusters, this specifies the JDBC url of the database. For DataSource-based cluster, this specifies either:
   <ul>
     <li>The class name of the DataSource implementation (from which a new instance will be created).</li>
     <li>The JNDI name of the pre-bound DataSource.</li>
-  </ul></dd><dt>user</dt><dd>The user name used by HA-JDBC to connect to the database for synchronization and meta-data caching purposes. This user should have administrative privileges. This differs from the database user used by your application (which likely has CRUD or read-only permissions).</dd><dt>password</dt><dd>The password for the above database user.</dd><dt>property</dt><dd><p>Defines a set of properties, the semantics of which depend on the cluster access pattern. For Driver-based clusters, these properties are passed to the corresponding call to <tt>Driver.connect(String, Properties)</tt> method. For DataSource-based clusters, if the database name specified a:</p>
+  </ul></dd><dt>weight</dt><dd>Defines the relative weight of this database node. If undefined, weight is assumed to be 1. See <a href="#balancer">Balancer</a> section for details.</dd><dt>user</dt><dd>The user name used by HA-JDBC to connect to the database for synchronization and meta-data caching purposes. This user should have administrative privileges. This differs from the database user used by your application (which likely has CRUD or read-only permissions).</dd><dt>password</dt><dd>The password for the above database user.</dd><dt>property</dt><dd><p>Defines a set of properties, the semantics of which depend on the cluster access pattern. For Driver-based clusters, these properties are passed to the corresponding call to <tt>Driver.connect(String, Properties)</tt> method. For DataSource-based clusters, if the database name specified a:</p>
   <ul>
     <li>class name, then these properties are interpreted as JavaBean properties used to initialize the DataSource instance. e.g.</li>
   </ul>
-  <div class="source"><pre class="prettyprint linenums">    &lt;database id=&quot;db1&quot;&gt;
-       &lt;name&gt;org.postgresql.ds.PGSimpleDataSource&lt;/name&gt;
+  <div class="source"><pre class="prettyprint linenums">    &lt;database id=&quot;db1&quot; location=&quot;org.postgresql.ds.PGSimpleDataSource&quot;&gt;
        &lt;property name=&quot;serverName&quot;&gt;server1&lt;/property&gt;
        &lt;property name=&quot;portNumber&quot;&gt;5432&lt;/property&gt;
        &lt;property name=&quot;databaseName&quot;&gt;database&lt;/property&gt;
@@ -205,8 +203,7 @@
   <ul>
     <li>JNDI name, then these properties are used as JNDI environment properties when constructing the initial context. e.g.</li>
   </ul>
-  <div class="source"><pre class="prettyprint linenums">    &lt;database id=&quot;db1&quot;&gt;
-       &lt;name&gt;java:comp/env/jdbc/db1&lt;/name&gt;
+  <div class="source"><pre class="prettyprint linenums">    &lt;database id=&quot;db1&quot; location=&quot;java:comp/env/jdbc/db1&quot;&gt;
        &lt;property name=&quot;java.naming.provider.url&quot;&gt;...&lt;/property&gt;
     &lt;/database&gt;
 </pre></div></dd>
@@ -222,8 +219,8 @@
 <div class="source"><pre class="prettyprint linenums">&lt;ha-jdbc xmlns=&quot;urn:ha-jdbc:cluster:2.1&quot;&gt;
     &lt;cluster balancer=&quot;simple&quot;&gt;
        &lt;!-- Read requests will always prefer db1 --&gt;
-       &lt;database id=&quot;db1&quot; weight=&quot;2&quot;&gt;&lt;!-- ... --&gt;&lt;/database&gt;
-       &lt;database id=&quot;db2&quot; weight=&quot;1&quot;&gt;&lt;!-- ... --&gt;&lt;/database&gt;
+       &lt;database id=&quot;db1&quot; location=&quot;...&quot; weight=&quot;2&quot;&gt;&lt;!-- ... --&gt;&lt;/database&gt;
+       &lt;database id=&quot;db2&quot; location=&quot;...&quot; weight=&quot;1&quot;&gt;&lt;!-- ... --&gt;&lt;/database&gt;
     &lt;/cluster&gt;
 &lt;/ha-jdbc&gt;
 </pre></div></div><div class="section"><h3>Synchronization strategies<a name="Synchronization_strategies"></a></h3><p>Defines a strategy for synchronizing a database before activation. A cluster may define multiple synchronization strategies, however, one of them must be designated as the <tt>default-sync</tt>. The default synchronization strategy is used when synchronization is triggered by auto-activation. The others are only used during manual database activation.</p><p>HA-JDBC supports the following strategies by default. As of version 2.1, synchronization strategies are defined by identifier alone, not by class name. If the strategy exposes any JavaBean properties, these can be overridden via nested <tt>property</tt> elements.</p>
@@ -276,8 +273,7 @@
 </pre></div></div><div class="section"><h3>Password Obfuscation<a name="Password_Obfuscation"></a></h3><p>Since HA-JDBCs configuration file contains references to database passwords, some users may want to obfuscate these. To indicate that a password uses an obfuscation mechanism, use a : to indicate the appropriate decoder.</p><p>e.g.</p>
 <div class="source"><pre class="prettyprint linenums">&lt;ha-jdbc xmlns=&quot;urn:ha-jdbc:cluster:2.1&quot;&gt;
     &lt;cluster ...&gt;
-       &lt;database id=&quot;db1&quot;&gt;
-         &lt;name&gt;jdbc:h2:mem:db1&lt;/name&gt;
+       &lt;database id=&quot;db1&quot; location=&quot;jdbc:mysql://server:port/db1&quot;&gt;
          &lt;user&gt;admin&lt;/user&gt;
          &lt;password&gt;?:wzAkF0hlYUeGhfzRQIxYAQ==&lt;/password&gt;
        &lt;/database&gt;
@@ -368,13 +364,11 @@ Connection connection = DriverManager.getConnection(&quot;jdbc:ha-jdbc:mycluster
 </pre></div></div></div><div class="section"><h2>Using HA-JDBC<a name="Using_HA-JDBC"></a></h2><p>Application access an HA-JDBC cluster either via the Driver or DataSource.</p><div class="section"><h3>Driver-based access<a name="Driver-based_access"></a></h3><p>To access a specific cluster via the Driver, HA-JDBC must be configured to access your databases accordingly.</p><p>e.g.</p><p><tt>ha-jdbc-mycluster.xml</tt></p>
 <div class="source"><pre class="prettyprint linenums">&lt;ha-jdbc xmlns=&quot;urn:ha-jdbc:cluster:2.1&quot;&gt;
     &lt;cluster&gt;
-       &lt;database id=&quot;db1&quot;&gt;
-         &lt;name&gt;jdbc:postgresql://server1/database&lt;/name&gt;
+       &lt;database id=&quot;db1&quot; location=&quot;jdbc:postgresql://server1:port1/database1&quot;&gt;
          &lt;user&gt;pgadmin&lt;/user&gt;
          &lt;password&gt;password&lt;/password&gt;
        &lt;/database&gt;
-       &lt;database id=&quot;db2&quot;&gt;
-         &lt;name&gt;jdbc:postgresql://server2/database&lt;/name&gt;
+       &lt;database id=&quot;db2&quot; location=&quot;jdbc:postgresql://server2:port2/database2&quot;&gt;
          &lt;user&gt;pgadmin&lt;/user&gt;
          &lt;password&gt;password&lt;/password&gt;
        &lt;/database&gt;
@@ -385,16 +379,14 @@ Connection connection = DriverManager.getConnection(&quot;jdbc:ha-jdbc:mycluster
 </pre></div></div><div class="section"><h3>DataSource-based access<a name="DataSource-based_access"></a></h3><p>To access a specific cluster via a DataSource, HA-JDBC must be configured to access your databases via DataSources. HA-JDBC provides a DataSource, ConnectionPoolDataSource, and XADataSource implementations, depending on which resource you plan to proxy.</p><p>e.g.</p><p><tt>ha-jdbc-mycluster.xml</tt></p>
 <div class="source"><pre class="prettyprint linenums">&lt;ha-jdbc xmlns=&quot;urn:ha-jdbc:cluster:2.1&quot;&gt;
     &lt;cluster&gt;
-       &lt;database id=&quot;db1&quot;&gt;
-         &lt;name&gt;org.postgresql.ds.PGSimpleDataSource&lt;/name&gt;
+       &lt;database id=&quot;db1&quot; location=&quot;org.postgresql.ds.PGSimpleDataSource&quot;&gt;
          &lt;user&gt;pgadmin&lt;/user&gt;
          &lt;password&gt;password&lt;/password&gt;
          &lt;property name=&quot;serverName&quot;&gt;server1&lt;/property&gt;
          &lt;property name=&quot;portNumber&quot;&gt;5432&lt;/property&gt;
          &lt;property name=&quot;databaseName&quot;&gt;database&lt;/property&gt;
        &lt;/database&gt;
-       &lt;database id=&quot;db2&quot;&gt;
-         &lt;name&gt;org.postgresql.ds.PGSimpleDataSource&lt;/name&gt;
+       &lt;database id=&quot;db2&quot; location=&quot;org.postgresql.ds.PGSimpleDataSource&quot;&gt;
          &lt;user&gt;pgadmin&lt;/user&gt;
          &lt;password&gt;password&lt;/password&gt;
          &lt;property name=&quot;serverName&quot;&gt;server2&lt;/property&gt;
@@ -421,7 +413,7 @@ Connection connection = DriverManager.getConnection(&quot;jdbc:ha-jdbc:mycluster
     &lt;!-- ... --&gt;
 &lt;/web-app&gt;
 </pre></div><p>You can then access the cluster via:</p>
-<div class="source"><pre class="prettyprint linenums">javax.context.Context context = new javax.context.InitialContext();
+<div class="source"><pre class="prettyprint linenums">javax.naming.Context context = new javax.naming.InitialContext();
 javax.sql.DataSource ds = (javax.sql.DataSource) context.lookup(&quot;java:comp/env/jdbc/mycluster&quot;);
 java.sql.Connection connection = ds.getConnection(&quot;user&quot;, &quot;password&quot;);
 </pre></div></div></div>
@@ -434,7 +426,7 @@ java.sql.Connection connection = ds.getConnection(&quot;user&quot;, &quot;passwo
     <footer>
             <div class="container-fluid">
               <div class="row span12">Copyright &copy;                    2004-2012
-                        <a href="https://github.com/pferraro">Paul Ferraro</a>.
+                        <a href="http://github.com/ha-jdbc">Paul Ferraro</a>.
             All Rights Reserved.      
             
       </div>
