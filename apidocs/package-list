@@ -52,7 +52,7 @@ net.sf.hajdbc.state.bdb
 net.sf.hajdbc.state.distributed
 net.sf.hajdbc.state.simple
 net.sf.hajdbc.state.sql
-net.sf.hajdbc.state.sqljet
+net.sf.hajdbc.state.sqlite
 net.sf.hajdbc.sync
 net.sf.hajdbc.tx
 net.sf.hajdbc.util

@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * HA-JDBC: High-Availability JDBC<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * Copyright (C) 2012  Paul Ferraro<a name="line.3"></a>
+<span class="sourceLineNo">004</span> *<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * This program is free software: you can redistribute it and/or modify<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * it under the terms of the GNU Lesser General Public License as published by<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the Free Software Foundation, either version 3 of the License, or<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * (at your option) any later version.<a name="line.8"></a>
+<span class="sourceLineNo">009</span> *<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * This program is distributed in the hope that it will be useful,<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * GNU Lesser General Public License for more details.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> *<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * You should have received a copy of the GNU Lesser General Public License<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.<a name="line.16"></a>
+<span class="sourceLineNo">017</span> */<a name="line.17"></a>
+<span class="sourceLineNo">018</span>package net.sf.hajdbc.dialect;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.sql.DatabaseMetaData;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.sql.SQLException;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Arrays;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.HashSet;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.Set;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.regex.Pattern;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import net.sf.hajdbc.IdentifierNormalizer;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import net.sf.hajdbc.util.Strings;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>public class StandardIdentifierNormalizer implements IdentifierNormalizer<a name="line.30"></a>
+<span class="sourceLineNo">031</span>{<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        // As defined in SQL-92 specification: http://www.andrew.cmu.edu/user/shadow/sql/sql1992.txt<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        private static final String[] SQL_92_RESERVED_WORDS = new String[] {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                "ABSOLUTE", "ACTION", "ADD", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "AVG",<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                "BEGIN", "BETWEEN", "BIT", "BIT_LENGTH", "BOTH", "BY",<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CHAR", "CHARACTER", "CHAR_LENGTH", "CHARACTER_LENGTH", "CHECK", "CLOSE", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONTINUE", "CONVERT", "CORRESPONDING", "COUNT", "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR",<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                "DATE", "DAY", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DESC", "DESCRIBE", "DESCRIPTOR", "DIAGNOSTICS", "DISCONNECT", "DISTINCT", "DOMAIN", "DOUBLE", "DROP",<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                "ELSE", "END", "END-EXEC", "ESCAPE", "EXCEPT", "EXCEPTION", "EXEC", "EXECUTE", "EXISTS", "EXTERNAL", "EXTRACT",<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                "FALSE", "FETCH", "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND", "FROM", "FULL",<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                "GET", "GLOBAL", "GO", "GOTO", "GRANT", "GROUP",<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                "HAVING", "HOUR",<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                "IDENTITY", "IMMEDIATE", "IN", "INDICATOR", "INITIALLY", "INNER", "INPUT", "INSENSITIVE", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISOLATION",<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                "JOIN",<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                "KEY",<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                "LANGUAGE", "LAST", "LEADING", "LEFT", "LEVEL", "LIKE", "LOCAL", "LOWER",<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                "MATCH", "MAX", "MIN", "MINUTE", "MODULE", "MONTH",<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                "NAMES", "NATIONAL", "NATURAL", "NCHAR", "NEXT", "NO", "NOT", "NULL", "NULLIF", "NUMERIC",<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                "OCTET_LENGTH", "OF", "ON", "ONLY", "OPEN", "OPTION", "OR", "ORDER", "OUTER", "OUTPUT", "OVERLAPS",<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                "PAD", "PARTIAL", "POSITION", "PRECISION", "PREPARE", "PRESERVE", "PRIMARY", "PRIOR", "PRIVILEGES", "PROCEDURE", "PUBLIC",<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                "READ", "REAL", "REFERENCES", "RELATIVE", "RESTRICT", "REVOKE", "RIGHT", "ROLLBACK", "ROWS",<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                "SCHEMA", "SCROLL", "SECOND", "SECTION", "SELECT", "SESSION", "SESSION_USER", "SET", "SIZE", "SMALLINT", "SOME", "SPACE", "SQL", "SQLCODE", "SQLERROR", "SQLSTATE", "SUBSTRING", "SUM", "SYSTEM_USER",<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                "TABLE", "TEMPORARY", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TRAILING", "TRANSACTION", "TRANSLATE", "TRANSLATION", "TRIM", "TRUE",<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                "UNION", "UNIQUE", "UNKNOWN", "UPDATE", "UPPER", "USAGE", "USER", "USING",<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                "VALUE", "VALUES", "VARCHAR", "VARYING", "VIEW",<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                "WHEN", "WHENEVER", "WHERE", "WITH", "WORK", "WRITE",<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                "YEAR",<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                "ZONE"<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        };<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        <a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private static final Pattern UPPER_CASE_PATTERN = Pattern.compile("[A-Z]");<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        private static final Pattern LOWER_CASE_PATTERN = Pattern.compile("[a-z]");<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        <a name="line.62"></a>
+<span class="sourceLineNo">063</span>        private final Set&lt;String&gt; reservedIdentifierSet = new HashSet&lt;String&gt;(SQL_92_RESERVED_WORDS.length);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        private final Pattern identifierPattern;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        private final String quote;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private final boolean supportsMixedCaseIdentifiers;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        private final boolean supportsMixedCaseQuotedIdentifiers;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        private final boolean storesLowerCaseIdentifiers;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        private final boolean storesLowerCaseQuotedIdentifiers;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        private final boolean storesUpperCaseIdentifiers;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        private final boolean storesUpperCaseQuotedIdentifiers;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        <a name="line.72"></a>
+<span class="sourceLineNo">073</span>        public StandardIdentifierNormalizer(DatabaseMetaData metaData, Pattern identifierPattern) throws SQLException<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                this.identifierPattern = identifierPattern;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                this.quote = metaData.getIdentifierQuoteString();<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                this.supportsMixedCaseIdentifiers = metaData.supportsMixedCaseIdentifiers();<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                this.supportsMixedCaseQuotedIdentifiers = metaData.supportsMixedCaseQuotedIdentifiers();<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                this.storesLowerCaseIdentifiers = metaData.storesLowerCaseIdentifiers();<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                this.storesLowerCaseQuotedIdentifiers = metaData.storesLowerCaseQuotedIdentifiers();<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                this.storesUpperCaseIdentifiers = metaData.storesUpperCaseIdentifiers();<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                this.storesUpperCaseQuotedIdentifiers = metaData.storesUpperCaseQuotedIdentifiers();<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                <a name="line.83"></a>
+<span class="sourceLineNo">084</span>                this.reservedIdentifierSet.addAll(Arrays.asList(SQL_92_RESERVED_WORDS));<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                <a name="line.85"></a>
+<span class="sourceLineNo">086</span>                for (String word: metaData.getSQLKeywords().split(Strings.COMMA))<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        this.reservedIdentifierSet.add(word.toUpperCase());<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>        @Override<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        public String normalize(String identifier)<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                if (identifier == null) return null;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                <a name="line.96"></a>
+<span class="sourceLineNo">097</span>                int quoteLength = this.quote.length();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                <a name="line.98"></a>
+<span class="sourceLineNo">099</span>                boolean quoted = identifier.startsWith(this.quote) &amp;&amp; identifier.endsWith(this.quote);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                // Strip any existing quoting<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                String raw = quoted ? identifier.substring(quoteLength, identifier.length() - quoteLength) : identifier;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                <a name="line.102"></a>
+<span class="sourceLineNo">103</span>                // Quote reserved identifiers<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                boolean requiresQuoting = this.reservedIdentifierSet.contains(raw.toUpperCase());<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                <a name="line.105"></a>
+<span class="sourceLineNo">106</span>                // Quote identifiers containing special characters<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                requiresQuoting |= !this.identifierPattern.matcher(raw).matches();<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                <a name="line.108"></a>
+<span class="sourceLineNo">109</span>                // Quote mixed-case identifiers if detected and supported by DBMS<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                requiresQuoting |= quoted &amp;&amp; !this.supportsMixedCaseIdentifiers &amp;&amp; this.supportsMixedCaseQuotedIdentifiers &amp;&amp; ((this.storesLowerCaseIdentifiers &amp;&amp; !this.storesLowerCaseQuotedIdentifiers &amp;&amp; UPPER_CASE_PATTERN.matcher(raw).find()) || (this.storesUpperCaseIdentifiers &amp;&amp; !this.storesUpperCaseQuotedIdentifiers &amp;&amp; LOWER_CASE_PATTERN.matcher(raw).find()));<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                <a name="line.111"></a>
+<span class="sourceLineNo">112</span>                return requiresQuoting ? this.quote + this.normalizeCaseQuoted(raw) + this.quote : this.normalizeCase(raw);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        private String normalizeCase(String identifier)<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                if (this.storesLowerCaseIdentifiers) return identifier.toLowerCase();<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                <a name="line.118"></a>
+<span class="sourceLineNo">119</span>                if (this.storesUpperCaseIdentifiers) return identifier.toUpperCase();<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                <a name="line.120"></a>
+<span class="sourceLineNo">121</span>                return identifier;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        private String normalizeCaseQuoted(String identifier)<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                if (this.storesLowerCaseQuotedIdentifiers) return identifier.toLowerCase();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                <a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (this.storesUpperCaseQuotedIdentifiers) return identifier.toUpperCase();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                <a name="line.129"></a>
+<span class="sourceLineNo">130</span>                return identifier;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>}<a name="line.132"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

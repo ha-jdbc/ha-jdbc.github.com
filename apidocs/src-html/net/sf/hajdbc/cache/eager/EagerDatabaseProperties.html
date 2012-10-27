@@ -36,9 +36,9 @@
 <span class="sourceLineNo">028</span><a name="line.28"></a>
 <span class="sourceLineNo">029</span>import net.sf.hajdbc.QualifiedName;<a name="line.29"></a>
 <span class="sourceLineNo">030</span>import net.sf.hajdbc.SequenceProperties;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import net.sf.hajdbc.TableProperties;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import net.sf.hajdbc.cache.AbstractDatabaseProperties;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import net.sf.hajdbc.cache.DatabaseMetaDataSupport;<a name="line.33"></a>
+<span class="sourceLineNo">031</span>import net.sf.hajdbc.SequenceSupport;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import net.sf.hajdbc.TableProperties;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import net.sf.hajdbc.cache.AbstractDatabaseProperties;<a name="line.33"></a>
 <span class="sourceLineNo">034</span>import net.sf.hajdbc.dialect.Dialect;<a name="line.34"></a>
 <span class="sourceLineNo">035</span><a name="line.35"></a>
 <span class="sourceLineNo">036</span>/**<a name="line.36"></a>
@@ -52,15 +52,15 @@
 <span class="sourceLineNo">044</span>        private final List&lt;String&gt; defaultSchemas;<a name="line.44"></a>
 <span class="sourceLineNo">045</span>        private final Map&lt;Integer, Map.Entry&lt;String, Integer&gt;&gt; types;<a name="line.45"></a>
 <span class="sourceLineNo">046</span>        <a name="line.46"></a>
-<span class="sourceLineNo">047</span>        public EagerDatabaseProperties(DatabaseMetaData metaData, DatabaseMetaDataSupport support, Dialect dialect) throws SQLException<a name="line.47"></a>
+<span class="sourceLineNo">047</span>        public EagerDatabaseProperties(DatabaseMetaData metaData, Dialect dialect) throws SQLException<a name="line.47"></a>
 <span class="sourceLineNo">048</span>        {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                super(metaData, support);<a name="line.49"></a>
+<span class="sourceLineNo">049</span>                super(metaData, dialect);<a name="line.49"></a>
 <span class="sourceLineNo">050</span>                <a name="line.50"></a>
-<span class="sourceLineNo">051</span>                Collection&lt;QualifiedName&gt; tables = support.getTables(metaData);<a name="line.51"></a>
+<span class="sourceLineNo">051</span>                Collection&lt;QualifiedName&gt; tables = dialect.getTables(metaData, this.nameFactory);<a name="line.51"></a>
 <span class="sourceLineNo">052</span>                <a name="line.52"></a>
 <span class="sourceLineNo">053</span>                for (QualifiedName table: tables)<a name="line.53"></a>
 <span class="sourceLineNo">054</span>                {<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                        TableProperties properties = new EagerTableProperties(metaData, support, table);<a name="line.55"></a>
+<span class="sourceLineNo">055</span>                        TableProperties properties = new EagerTableProperties(table, metaData, dialect, this.nameFactory);<a name="line.55"></a>
 <span class="sourceLineNo">056</span>                        <a name="line.56"></a>
 <span class="sourceLineNo">057</span>                        this.tables.put(properties.getName(), properties);<a name="line.57"></a>
 <span class="sourceLineNo">058</span>                }<a name="line.58"></a>
@@ -69,38 +69,42 @@
 <span class="sourceLineNo">061</span>                <a name="line.61"></a>
 <span class="sourceLineNo">062</span>                this.defaultSchemas = new ArrayList&lt;String&gt;(defaultSchemaList);<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                <a name="line.63"></a>
-<span class="sourceLineNo">064</span>                for (SequenceProperties sequence: support.getSequences(metaData))<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                        this.sequences.put(sequence.getName(), sequence);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                }<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                <a name="line.68"></a>
-<span class="sourceLineNo">069</span>                this.types = support.getTypes(metaData);<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        }<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        <a name="line.71"></a>
-<span class="sourceLineNo">072</span>        @Override<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        protected List&lt;String&gt; defaultSchemas()<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        {<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                return this.defaultSchemas;<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        }<a name="line.76"></a>
-<span class="sourceLineNo">077</span><a name="line.77"></a>
-<span class="sourceLineNo">078</span>        @Override<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        protected Map&lt;QualifiedName, SequenceProperties&gt; sequences()<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                return this.sequences;<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
-<span class="sourceLineNo">083</span><a name="line.83"></a>
-<span class="sourceLineNo">084</span>        @Override<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        protected Map&lt;QualifiedName, TableProperties&gt; tables()<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        {<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                return this.tables;<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        }<a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>        @Override<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        protected Map&lt;Integer, Entry&lt;String, Integer&gt;&gt; types()<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                return this.types;<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
-<span class="sourceLineNo">095</span>}<a name="line.95"></a>
+<span class="sourceLineNo">064</span>                SequenceSupport support = dialect.getSequenceSupport();<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                if (support != null)<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        for (SequenceProperties sequence: support.getSequences(metaData, support.createSequencePropertiesFactory(this.nameFactory)))<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                this.sequences.put(sequence.getName(), sequence);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                }<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                <a name="line.72"></a>
+<span class="sourceLineNo">073</span>                this.types = dialect.getTypes(metaData);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        <a name="line.75"></a>
+<span class="sourceLineNo">076</span>        @Override<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        protected List&lt;String&gt; defaultSchemas()<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                return this.defaultSchemas;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        @Override<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        protected Map&lt;QualifiedName, SequenceProperties&gt; sequences()<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                return this.sequences;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        @Override<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        protected Map&lt;QualifiedName, TableProperties&gt; tables()<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                return this.tables;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        }<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>        @Override<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        protected Map&lt;Integer, Entry&lt;String, Integer&gt;&gt; types()<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                return this.types;<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
+<span class="sourceLineNo">099</span>}<a name="line.99"></a>
 
 
 

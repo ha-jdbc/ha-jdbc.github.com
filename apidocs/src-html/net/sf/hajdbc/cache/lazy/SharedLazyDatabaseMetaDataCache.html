@@ -37,70 +37,65 @@
 <span class="sourceLineNo">029</span>import net.sf.hajdbc.DatabaseCluster;<a name="line.29"></a>
 <span class="sourceLineNo">030</span>import net.sf.hajdbc.DatabaseProperties;<a name="line.30"></a>
 <span class="sourceLineNo">031</span>import net.sf.hajdbc.cache.DatabaseMetaDataCache;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import net.sf.hajdbc.cache.DatabaseMetaDataSupport;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import net.sf.hajdbc.cache.DatabaseMetaDataSupportFactory;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import net.sf.hajdbc.dialect.Dialect;<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>/**<a name="line.37"></a>
-<span class="sourceLineNo">038</span> * DatabaseMetaDataCache implementation that lazily caches data when requested.<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * Used when a compromise between memory usage and performance is desired.<a name="line.39"></a>
-<span class="sourceLineNo">040</span> * Caches DatabaseProperties using a soft reference to prevent &lt;code&gt;OutOfMemoryError&lt;/code&gt;s.<a name="line.40"></a>
-<span class="sourceLineNo">041</span> * <a name="line.41"></a>
-<span class="sourceLineNo">042</span> * @author Paul Ferraro<a name="line.42"></a>
-<span class="sourceLineNo">043</span> * @since 2.0<a name="line.43"></a>
-<span class="sourceLineNo">044</span> */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>public class SharedLazyDatabaseMetaDataCache&lt;Z, D extends Database&lt;Z&gt;&gt; implements DatabaseMetaDataCache&lt;Z, D&gt;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>{<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        private final DatabaseCluster&lt;Z, D&gt; cluster;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        private final DatabaseMetaDataSupportFactory factory;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        <a name="line.49"></a>
-<span class="sourceLineNo">050</span>        private volatile Reference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt; entryRef = new SoftReference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt;(null);<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        <a name="line.51"></a>
-<span class="sourceLineNo">052</span>        public SharedLazyDatabaseMetaDataCache(DatabaseCluster&lt;Z, D&gt; cluster, DatabaseMetaDataSupportFactory factory)<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                this.cluster = cluster;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                this.factory = factory;<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        }<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        <a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /**<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * @see net.sf.hajdbc.cache.DatabaseMetaDataCache#flush()<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         */<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        @Override<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public synchronized void flush()<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        {<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                this.entryRef.clear();<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * {@inheritDoc}<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * @see net.sf.hajdbc.cache.DatabaseMetaDataCache#getDatabaseProperties(net.sf.hajdbc.Database, java.sql.Connection)<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        @Override<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        public DatabaseProperties getDatabaseProperties(D database, Connection connection) throws SQLException<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt; entry = this.entryRef.get();<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                <a name="line.75"></a>
-<span class="sourceLineNo">076</span>                if (entry == null)<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                {<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        DatabaseMetaData metaData = connection.getMetaData();<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                        Dialect dialect = this.cluster.getDialect();<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                        DatabaseMetaDataSupport support = this.factory.createSupport(metaData, dialect);<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                        LazyDatabaseMetaDataProvider provider = new LazyDatabaseMetaDataProvider(metaData);<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                        DatabaseProperties properties = new LazyDatabaseProperties(provider, support, dialect);<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                        <a name="line.83"></a>
-<span class="sourceLineNo">084</span>                        entry = new AbstractMap.SimpleImmutableEntry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;(properties, provider);<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                <a name="line.85"></a>
-<span class="sourceLineNo">086</span>                        this.entryRef = new SoftReference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt;(entry);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                }<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                else<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        entry.getValue().setConnection(connection);<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                }<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                <a name="line.92"></a>
-<span class="sourceLineNo">093</span>                return entry.getKey();<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
-<span class="sourceLineNo">095</span>}<a name="line.95"></a>
+<span class="sourceLineNo">032</span>import net.sf.hajdbc.dialect.Dialect;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>/**<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * DatabaseMetaDataCache implementation that lazily caches data when requested.<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * Used when a compromise between memory usage and performance is desired.<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * Caches DatabaseProperties using a soft reference to prevent &lt;code&gt;OutOfMemoryError&lt;/code&gt;s.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * <a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @author Paul Ferraro<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @since 2.0<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public class SharedLazyDatabaseMetaDataCache&lt;Z, D extends Database&lt;Z&gt;&gt; implements DatabaseMetaDataCache&lt;Z, D&gt;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>{<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        private final DatabaseCluster&lt;Z, D&gt; cluster;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        <a name="line.46"></a>
+<span class="sourceLineNo">047</span>        private volatile Reference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt; entryRef = new SoftReference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt;(null);<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        <a name="line.48"></a>
+<span class="sourceLineNo">049</span>        public SharedLazyDatabaseMetaDataCache(DatabaseCluster&lt;Z, D&gt; cluster)<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                this.cluster = cluster;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        }<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        <a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * @see net.sf.hajdbc.cache.DatabaseMetaDataCache#flush()<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        @Override<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public synchronized void flush()<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                this.entryRef.clear();<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /**<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * {@inheritDoc}<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * @see net.sf.hajdbc.cache.DatabaseMetaDataCache#getDatabaseProperties(net.sf.hajdbc.Database, java.sql.Connection)<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        @Override<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        public DatabaseProperties getDatabaseProperties(D database, Connection connection) throws SQLException<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt; entry = this.entryRef.get();<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                <a name="line.71"></a>
+<span class="sourceLineNo">072</span>                if (entry == null)<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        DatabaseMetaData metaData = connection.getMetaData();<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        Dialect dialect = this.cluster.getDialect();<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        LazyDatabaseMetaDataProvider provider = new LazyDatabaseMetaDataProvider(metaData);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        DatabaseProperties properties = new LazyDatabaseProperties(provider, dialect);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        <a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        entry = new AbstractMap.SimpleImmutableEntry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;(properties, provider);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                <a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        this.entryRef = new SoftReference&lt;Map.Entry&lt;DatabaseProperties, LazyDatabaseMetaDataProvider&gt;&gt;(entry);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                else<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        entry.getValue().setConnection(connection);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                }<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                <a name="line.87"></a>
+<span class="sourceLineNo">088</span>                return entry.getKey();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>}<a name="line.90"></a>
 
 
 
