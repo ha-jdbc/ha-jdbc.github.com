@@ -25,12 +25,12 @@
 <span class="sourceLineNo">017</span> */<a name="line.17"></a>
 <span class="sourceLineNo">018</span>package net.sf.hajdbc.durability;<a name="line.18"></a>
 <span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.EventObject;<a name="line.20"></a>
+<span class="sourceLineNo">020</span>import net.sf.hajdbc.util.Event;<a name="line.20"></a>
 <span class="sourceLineNo">021</span><a name="line.21"></a>
 <span class="sourceLineNo">022</span>/**<a name="line.22"></a>
 <span class="sourceLineNo">023</span> * @author Paul Ferraro<a name="line.23"></a>
 <span class="sourceLineNo">024</span> */<a name="line.24"></a>
-<span class="sourceLineNo">025</span>public class DurabilityEventImpl extends EventObject implements DurabilityEvent<a name="line.25"></a>
+<span class="sourceLineNo">025</span>public class DurabilityEventImpl extends Event&lt;Object&gt; implements DurabilityEvent<a name="line.25"></a>
 <span class="sourceLineNo">026</span>{<a name="line.26"></a>
 <span class="sourceLineNo">027</span>        private static final long serialVersionUID = -8747536263068408813L;<a name="line.27"></a>
 <span class="sourceLineNo">028</span>        <a name="line.28"></a>
@@ -50,7 +50,7 @@
 <span class="sourceLineNo">042</span>        @Override<a name="line.42"></a>
 <span class="sourceLineNo">043</span>        public Object getTransactionId()<a name="line.43"></a>
 <span class="sourceLineNo">044</span>        {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                return this.source;<a name="line.45"></a>
+<span class="sourceLineNo">045</span>                return this.getSource();<a name="line.45"></a>
 <span class="sourceLineNo">046</span>        }<a name="line.46"></a>
 <span class="sourceLineNo">047</span>        <a name="line.47"></a>
 <span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
@@ -70,23 +70,13 @@
 <span class="sourceLineNo">062</span>        @Override<a name="line.62"></a>
 <span class="sourceLineNo">063</span>        public boolean equals(Object object)<a name="line.63"></a>
 <span class="sourceLineNo">064</span>        {<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                if ((object == null) || !(object instanceof InvocationEvent)) return false;<a name="line.65"></a>
+<span class="sourceLineNo">065</span>                if ((object == null) || !(object instanceof DurabilityEvent)) return false;<a name="line.65"></a>
 <span class="sourceLineNo">066</span>                <a name="line.66"></a>
-<span class="sourceLineNo">067</span>                InvocationEvent event = (InvocationEvent) object;<a name="line.67"></a>
+<span class="sourceLineNo">067</span>                DurabilityEvent event = (DurabilityEvent) object;<a name="line.67"></a>
 <span class="sourceLineNo">068</span>                <a name="line.68"></a>
-<span class="sourceLineNo">069</span>                return (this.phase == event.getPhase()) &amp;&amp; this.source.equals(event.getTransactionId());<a name="line.69"></a>
+<span class="sourceLineNo">069</span>                return (this.phase == event.getPhase()) &amp;&amp; this.getTransactionId().equals(event.getTransactionId());<a name="line.69"></a>
 <span class="sourceLineNo">070</span>        }<a name="line.70"></a>
-<span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         * {@inheritDoc}<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         * @see java.lang.Object#hashCode()<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        @Override<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        public int hashCode()<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                return this.source.hashCode();<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>}<a name="line.81"></a>
+<span class="sourceLineNo">071</span>}<a name="line.71"></a>
 
 
 
