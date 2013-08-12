@@ -99,9 +99,9 @@
 <span class="sourceLineNo">091</span>                        <a name="line.91"></a>
 <span class="sourceLineNo">092</span>                        try<a name="line.92"></a>
 <span class="sourceLineNo">093</span>                        {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                                this.startProcess(support.createDumpProcess(new ConnectionPropertiesImpl&lt;Z, D&gt;(context, context.getSourceDatabase()), file));<a name="line.94"></a>
+<span class="sourceLineNo">094</span>                                startProcess(support.createDumpProcess(new ConnectionPropertiesImpl&lt;Z, D&gt;(context, context.getSourceDatabase()), file));<a name="line.94"></a>
 <span class="sourceLineNo">095</span>                                <a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                this.startProcess(support.createRestoreProcess(new ConnectionPropertiesImpl&lt;Z, D&gt;(context, context.getTargetDatabase()), file));<a name="line.96"></a>
+<span class="sourceLineNo">096</span>                                startProcess(support.createRestoreProcess(new ConnectionPropertiesImpl&lt;Z, D&gt;(context, context.getTargetDatabase()), file));<a name="line.96"></a>
 <span class="sourceLineNo">097</span>                        }<a name="line.97"></a>
 <span class="sourceLineNo">098</span>                        finally<a name="line.98"></a>
 <span class="sourceLineNo">099</span>                        {<a name="line.99"></a>
@@ -110,11 +110,11 @@
 <span class="sourceLineNo">102</span>                }<a name="line.102"></a>
 <span class="sourceLineNo">103</span>                catch (Exception e)<a name="line.103"></a>
 <span class="sourceLineNo">104</span>                {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        throw ExceptionType.getExceptionFactory(SQLException.class).createException(e);<a name="line.105"></a>
+<span class="sourceLineNo">105</span>                        throw ExceptionType.SQL.&lt;SQLException&gt;getExceptionFactory().createException(e);<a name="line.105"></a>
 <span class="sourceLineNo">106</span>                }<a name="line.106"></a>
 <span class="sourceLineNo">107</span>        }<a name="line.107"></a>
 <span class="sourceLineNo">108</span>        <a name="line.108"></a>
-<span class="sourceLineNo">109</span>        private void startProcess(final ProcessBuilder processBuilder) throws Exception<a name="line.109"></a>
+<span class="sourceLineNo">109</span>        private static void startProcess(final ProcessBuilder processBuilder) throws Exception<a name="line.109"></a>
 <span class="sourceLineNo">110</span>        {<a name="line.110"></a>
 <span class="sourceLineNo">111</span>                PrivilegedExceptionAction&lt;Process&gt; action = new PrivilegedExceptionAction&lt;Process&gt;()<a name="line.111"></a>
 <span class="sourceLineNo">112</span>                {<a name="line.112"></a>

@@ -25,26 +25,26 @@
 <span class="sourceLineNo">017</span> */<a name="line.17"></a>
 <span class="sourceLineNo">018</span>package net.sf.hajdbc;<a name="line.18"></a>
 <span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.sql.SQLException;<a name="line.20"></a>
-<span class="sourceLineNo">021</span><a name="line.21"></a>
-<span class="sourceLineNo">022</span>import javax.transaction.xa.XAException;<a name="line.22"></a>
-<span class="sourceLineNo">023</span><a name="line.23"></a>
-<span class="sourceLineNo">024</span>import net.sf.hajdbc.util.Matcher;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import net.sf.hajdbc.util.ServiceLoaders;<a name="line.25"></a>
-<span class="sourceLineNo">026</span><a name="line.26"></a>
-<span class="sourceLineNo">027</span>/**<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @author Paul Ferraro<a name="line.28"></a>
-<span class="sourceLineNo">029</span> */<a name="line.29"></a>
-<span class="sourceLineNo">030</span>@SuppressWarnings("rawtypes")<a name="line.30"></a>
-<span class="sourceLineNo">031</span>public enum ExceptionType implements Matcher&lt;ExceptionFactory&gt;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>{<a name="line.32"></a>
-<span class="sourceLineNo">033</span>        SQL(SQLException.class), XA(XAException.class);<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        <a name="line.34"></a>
-<span class="sourceLineNo">035</span>        private final Class&lt;? extends Exception&gt; exceptionClass;<a name="line.35"></a>
+<span class="sourceLineNo">020</span>import net.sf.hajdbc.sql.SQLExceptionFactory;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import net.sf.hajdbc.sql.io.IOExceptionFactory;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import net.sf.hajdbc.sql.xa.XAExceptionFactory;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import net.sf.hajdbc.util.Matcher;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * @author Paul Ferraro<a name="line.26"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>@SuppressWarnings("rawtypes")<a name="line.28"></a>
+<span class="sourceLineNo">029</span>public enum ExceptionType implements Matcher&lt;ExceptionFactory&gt;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>{<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        SQL(new SQLExceptionFactory()),<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        XA(new XAExceptionFactory()),<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        IO(new IOExceptionFactory())<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        ;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        private final ExceptionFactory&lt;? extends Exception&gt; factory;<a name="line.35"></a>
 <span class="sourceLineNo">036</span>        <a name="line.36"></a>
-<span class="sourceLineNo">037</span>        private &lt;E extends Exception&gt; ExceptionType(final Class&lt;E&gt; exceptionClass)<a name="line.37"></a>
+<span class="sourceLineNo">037</span>        private ExceptionType(ExceptionFactory&lt;? extends Exception&gt; factory)<a name="line.37"></a>
 <span class="sourceLineNo">038</span>        {<a name="line.38"></a>
-<span class="sourceLineNo">039</span>                this.exceptionClass = exceptionClass;<a name="line.39"></a>
+<span class="sourceLineNo">039</span>                this.factory = factory;<a name="line.39"></a>
 <span class="sourceLineNo">040</span>        }<a name="line.40"></a>
 <span class="sourceLineNo">041</span>        <a name="line.41"></a>
 <span class="sourceLineNo">042</span>        @Override<a name="line.42"></a>
@@ -56,16 +56,16 @@
 <span class="sourceLineNo">048</span>        @SuppressWarnings("unchecked")<a name="line.48"></a>
 <span class="sourceLineNo">049</span>        public &lt;E extends Exception&gt; ExceptionFactory&lt;E&gt; getExceptionFactory()<a name="line.49"></a>
 <span class="sourceLineNo">050</span>        {<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                return ServiceLoaders.findRequiredService(this, ExceptionFactory.class);<a name="line.51"></a>
+<span class="sourceLineNo">051</span>                return (ExceptionFactory&lt;E&gt;) this.factory;<a name="line.51"></a>
 <span class="sourceLineNo">052</span>        }<a name="line.52"></a>
 <span class="sourceLineNo">053</span>        <a name="line.53"></a>
-<span class="sourceLineNo">054</span>        public static &lt;E extends Exception&gt; ExceptionFactory&lt;E&gt; getExceptionFactory(Class&lt;E&gt; exceptionClass)<a name="line.54"></a>
+<span class="sourceLineNo">054</span>        public static ExceptionType valueOf(Class&lt;?&gt; exceptionClass)<a name="line.54"></a>
 <span class="sourceLineNo">055</span>        {<a name="line.55"></a>
 <span class="sourceLineNo">056</span>                for (ExceptionType type: ExceptionType.values())<a name="line.56"></a>
 <span class="sourceLineNo">057</span>                {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                        if (type.exceptionClass.equals(exceptionClass))<a name="line.58"></a>
+<span class="sourceLineNo">058</span>                        if (type.factory.getTargetClass().equals(exceptionClass))<a name="line.58"></a>
 <span class="sourceLineNo">059</span>                        {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                                return type.getExceptionFactory();<a name="line.60"></a>
+<span class="sourceLineNo">060</span>                                return type;<a name="line.60"></a>
 <span class="sourceLineNo">061</span>                        }<a name="line.61"></a>
 <span class="sourceLineNo">062</span>                }<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                <a name="line.63"></a>

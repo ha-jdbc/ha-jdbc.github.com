@@ -32,6 +32,9 @@ net.sf.hajdbc.durability.coarse
 net.sf.hajdbc.durability.fine
 net.sf.hajdbc.durability.none
 net.sf.hajdbc.invocation
+net.sf.hajdbc.io
+net.sf.hajdbc.io.file
+net.sf.hajdbc.io.simple
 net.sf.hajdbc.lock
 net.sf.hajdbc.lock.distributed
 net.sf.hajdbc.lock.semaphore
@@ -45,7 +48,9 @@ net.sf.hajdbc.pool
 net.sf.hajdbc.pool.generic
 net.sf.hajdbc.pool.sql
 net.sf.hajdbc.sql
+net.sf.hajdbc.sql.io
 net.sf.hajdbc.sql.pool
+net.sf.hajdbc.sql.serial
 net.sf.hajdbc.sql.xa
 net.sf.hajdbc.state
 net.sf.hajdbc.state.bdb

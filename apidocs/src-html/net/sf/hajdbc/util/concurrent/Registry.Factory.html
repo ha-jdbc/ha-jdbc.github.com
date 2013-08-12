@@ -25,7 +25,7 @@
 <span class="sourceLineNo">017</span> */<a name="line.17"></a>
 <span class="sourceLineNo">018</span>package net.sf.hajdbc.util.concurrent;<a name="line.18"></a>
 <span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.concurrent.TimeUnit;<a name="line.20"></a>
+<span class="sourceLineNo">020</span>import net.sf.hajdbc.util.TimePeriod;<a name="line.20"></a>
 <span class="sourceLineNo">021</span><a name="line.21"></a>
 <span class="sourceLineNo">022</span>/**<a name="line.22"></a>
 <span class="sourceLineNo">023</span> * @author Paul Ferraro<a name="line.23"></a>
@@ -44,20 +44,18 @@
 <span class="sourceLineNo">036</span>        {<a name="line.36"></a>
 <span class="sourceLineNo">037</span>                V create(K key, C context) throws E;<a name="line.37"></a>
 <span class="sourceLineNo">038</span>                <a name="line.38"></a>
-<span class="sourceLineNo">039</span>                long getTimeout();<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                <a name="line.40"></a>
-<span class="sourceLineNo">041</span>                TimeUnit getTimeoutUnit();<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        <a name="line.43"></a>
-<span class="sourceLineNo">044</span>        public interface Store&lt;K, V&gt;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                V setIfAbsent(K key, V value);<a name="line.46"></a>
+<span class="sourceLineNo">039</span>                TimePeriod getTimeout();<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        }<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        <a name="line.41"></a>
+<span class="sourceLineNo">042</span>        public interface Store&lt;K, V&gt;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                V setIfAbsent(K key, V value);<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                <a name="line.45"></a>
+<span class="sourceLineNo">046</span>                V get(K key);<a name="line.46"></a>
 <span class="sourceLineNo">047</span>                <a name="line.47"></a>
-<span class="sourceLineNo">048</span>                V get(K key);<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                <a name="line.49"></a>
-<span class="sourceLineNo">050</span>                V clear(K key);<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        }<a name="line.51"></a>
-<span class="sourceLineNo">052</span>}<a name="line.52"></a>
+<span class="sourceLineNo">048</span>                V clear(K key);<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
+<span class="sourceLineNo">050</span>}<a name="line.50"></a>
 
 
 

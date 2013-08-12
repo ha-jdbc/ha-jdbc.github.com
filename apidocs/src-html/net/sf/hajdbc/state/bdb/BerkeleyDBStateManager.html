@@ -77,7 +77,7 @@
 <span class="sourceLineNo">069</span>        private static final EntryBinding&lt;InvocationKey&gt; INVOCATION_KEY_BINDING = new KeyBinding&lt;InvocationKey&gt;();<a name="line.69"></a>
 <span class="sourceLineNo">070</span>        private static final EntryBinding&lt;InvokerKey&gt; INVOKER_KEY_BINDING = new KeyBinding&lt;InvokerKey&gt;();<a name="line.70"></a>
 <span class="sourceLineNo">071</span>        private static final EntryBinding&lt;byte[]&gt; BLOB_BINDING = new ByteArrayBinding();<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        private static final byte[] NULL = new byte[0];<a name="line.72"></a>
+<span class="sourceLineNo">072</span>        static final byte[] NULL = new byte[0];<a name="line.72"></a>
 <span class="sourceLineNo">073</span>        <a name="line.73"></a>
 <span class="sourceLineNo">074</span>        private final DatabaseCluster&lt;?, ?&gt; cluster;<a name="line.74"></a>
 <span class="sourceLineNo">075</span>        private final File file;<a name="line.75"></a>
@@ -282,7 +282,7 @@
 <span class="sourceLineNo">274</span>        public Map&lt;InvocationEvent, Map&lt;String, InvokerEvent&gt;&gt; recover()<a name="line.274"></a>
 <span class="sourceLineNo">275</span>        {<a name="line.275"></a>
 <span class="sourceLineNo">276</span>                final Map&lt;InvocationEvent, Map&lt;String, InvokerEvent&gt;&gt; result = new HashMap&lt;InvocationEvent, Map&lt;String, InvokerEvent&gt;&gt;();<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                final TransactionIdentifierFactory&lt;?&gt; txIdFactory = cluster.getTransactionIdentifierFactory();<a name="line.277"></a>
+<span class="sourceLineNo">277</span>                final TransactionIdentifierFactory&lt;?&gt; txIdFactory = this.cluster.getTransactionIdentifierFactory();<a name="line.277"></a>
 <span class="sourceLineNo">278</span>                DatabaseQuery&lt;Void&gt; query = new DatabaseQuery&lt;Void&gt;(INVOCATION)<a name="line.278"></a>
 <span class="sourceLineNo">279</span>                {<a name="line.279"></a>
 <span class="sourceLineNo">280</span>                        @Override<a name="line.280"></a>
@@ -530,7 +530,7 @@
 <span class="sourceLineNo">522</span>                }<a name="line.522"></a>
 <span class="sourceLineNo">523</span>        }<a name="line.523"></a>
 <span class="sourceLineNo">524</span>        <a name="line.524"></a>
-<span class="sourceLineNo">525</span>        private static class KeyBinding&lt;T&gt; implements EntryBinding&lt;T&gt;<a name="line.525"></a>
+<span class="sourceLineNo">525</span>        static class KeyBinding&lt;T&gt; implements EntryBinding&lt;T&gt;<a name="line.525"></a>
 <span class="sourceLineNo">526</span>        {<a name="line.526"></a>
 <span class="sourceLineNo">527</span>                @Override<a name="line.527"></a>
 <span class="sourceLineNo">528</span>                public T entryToObject(DatabaseEntry entry)<a name="line.528"></a>
