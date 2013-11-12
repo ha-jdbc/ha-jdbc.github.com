@@ -266,7 +266,7 @@
 <span class="sourceLineNo">258</span>        @Override<a name="line.258"></a>
 <span class="sourceLineNo">259</span>        public ProcessBuilder createRestoreProcess(ConnectionProperties properties, File file)<a name="line.259"></a>
 <span class="sourceLineNo">260</span>        {<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                return setPassword(new ProcessBuilder("pg_restore", "-h", properties.getHost(), "-p", properties.getPort(), "-U", properties.getUser(), "-d", properties.getDatabase(), file.getPath()), properties);<a name="line.261"></a>
+<span class="sourceLineNo">261</span>                return setPassword(new ProcessBuilder("pg_restore", "-h", properties.getHost(), "-p", properties.getPort(), "-U", properties.getUser(), "-d", properties.getDatabase(), "-c", file.getPath()), properties);<a name="line.261"></a>
 <span class="sourceLineNo">262</span>        }<a name="line.262"></a>
 <span class="sourceLineNo">263</span>        <a name="line.263"></a>
 <span class="sourceLineNo">264</span>        private static ProcessBuilder setPassword(ProcessBuilder builder, ConnectionProperties properties)<a name="line.264"></a>

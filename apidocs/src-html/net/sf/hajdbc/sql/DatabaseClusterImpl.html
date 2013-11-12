@@ -198,7 +198,7 @@
 <span class="sourceLineNo">190</span>        @ManagedOperation<a name="line.190"></a>
 <span class="sourceLineNo">191</span>        public boolean isAlive(String databaseId)<a name="line.191"></a>
 <span class="sourceLineNo">192</span>        {<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                return this.isAlive(this.getDatabase(databaseId));<a name="line.193"></a>
+<span class="sourceLineNo">193</span>                return this.isAlive(this.getDatabase(databaseId), Level.WARN);<a name="line.193"></a>
 <span class="sourceLineNo">194</span>        }<a name="line.194"></a>
 <span class="sourceLineNo">195</span>        <a name="line.195"></a>
 <span class="sourceLineNo">196</span>        /**<a name="line.196"></a>
@@ -713,7 +713,7 @@
 <span class="sourceLineNo">705</span>                {<a name="line.705"></a>
 <span class="sourceLineNo">706</span>                        for (D database: this.configuration.getDatabaseMap().values())<a name="line.706"></a>
 <span class="sourceLineNo">707</span>                        {<a name="line.707"></a>
-<span class="sourceLineNo">708</span>                                if (this.isAlive(database))<a name="line.708"></a>
+<span class="sourceLineNo">708</span>                                if (this.isAlive(database, Level.WARN))<a name="line.708"></a>
 <span class="sourceLineNo">709</span>                                {<a name="line.709"></a>
 <span class="sourceLineNo">710</span>                                        this.activate(database, this.stateManager);<a name="line.710"></a>
 <span class="sourceLineNo">711</span>                                }<a name="line.711"></a>
@@ -835,7 +835,7 @@
 <span class="sourceLineNo">827</span>                }<a name="line.827"></a>
 <span class="sourceLineNo">828</span>        }<a name="line.828"></a>
 <span class="sourceLineNo">829</span><a name="line.829"></a>
-<span class="sourceLineNo">830</span>        boolean isAlive(D database)<a name="line.830"></a>
+<span class="sourceLineNo">830</span>        boolean isAlive(D database, Level level)<a name="line.830"></a>
 <span class="sourceLineNo">831</span>        {<a name="line.831"></a>
 <span class="sourceLineNo">832</span>                try<a name="line.832"></a>
 <span class="sourceLineNo">833</span>                {<a name="line.833"></a>
@@ -851,14 +851,14 @@
 <span class="sourceLineNo">843</span>                }<a name="line.843"></a>
 <span class="sourceLineNo">844</span>                catch (SQLException e)<a name="line.844"></a>
 <span class="sourceLineNo">845</span>                {<a name="line.845"></a>
-<span class="sourceLineNo">846</span>                        logger.log(Level.DEBUG, e);<a name="line.846"></a>
+<span class="sourceLineNo">846</span>                        logger.log(level, e);<a name="line.846"></a>
 <span class="sourceLineNo">847</span>                        return false;<a name="line.847"></a>
 <span class="sourceLineNo">848</span>                }<a name="line.848"></a>
 <span class="sourceLineNo">849</span>        }<a name="line.849"></a>
 <span class="sourceLineNo">850</span><a name="line.850"></a>
 <span class="sourceLineNo">851</span>        boolean activate(D database, SynchronizationStrategy strategy) throws SQLException, InterruptedException<a name="line.851"></a>
 <span class="sourceLineNo">852</span>        {<a name="line.852"></a>
-<span class="sourceLineNo">853</span>                if (!this.isAlive(database)) return false;<a name="line.853"></a>
+<span class="sourceLineNo">853</span>                if (!this.isAlive(database, Level.DEBUG)) return false;<a name="line.853"></a>
 <span class="sourceLineNo">854</span>                <a name="line.854"></a>
 <span class="sourceLineNo">855</span>                Lock lock = this.lockManager.writeLock(null);<a name="line.855"></a>
 <span class="sourceLineNo">856</span>                <a name="line.856"></a>
@@ -923,7 +923,7 @@
 <span class="sourceLineNo">915</span>                                <a name="line.915"></a>
 <span class="sourceLineNo">916</span>                                for (D database: databases)<a name="line.916"></a>
 <span class="sourceLineNo">917</span>                                {<a name="line.917"></a>
-<span class="sourceLineNo">918</span>                                        if (!DatabaseClusterImpl.this.isAlive(database))<a name="line.918"></a>
+<span class="sourceLineNo">918</span>                                        if (!DatabaseClusterImpl.this.isAlive(database, Level.WARN))<a name="line.918"></a>
 <span class="sourceLineNo">919</span>                                        {<a name="line.919"></a>
 <span class="sourceLineNo">920</span>                                                deadList.add(database);<a name="line.920"></a>
 <span class="sourceLineNo">921</span>                                        }<a name="line.921"></a>
