@@ -39,16 +39,15 @@
 <span class="sourceLineNo">031</span>        @Override<a name="line.31"></a>
 <span class="sourceLineNo">032</span>        public boolean matches(T service)<a name="line.32"></a>
 <span class="sourceLineNo">033</span>        {<a name="line.33"></a>
-<span class="sourceLineNo">034</span>                String serviceId = service.getId();<a name="line.34"></a>
-<span class="sourceLineNo">035</span>                return (this.id != null) &amp;&amp; (service != null) ? this.id.equalsIgnoreCase(serviceId) : (this.id == serviceId);<a name="line.35"></a>
-<span class="sourceLineNo">036</span>        }<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        public String toString()<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                return this.id;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span>}<a name="line.43"></a>
+<span class="sourceLineNo">034</span>                return (this.id != null) &amp;&amp; (service != null) ? this.id.equalsIgnoreCase(service.getId()) : (this.id == service.getId());<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        }<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        @Override<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        public String toString()<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                return this.id;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        }<a name="line.41"></a>
+<span class="sourceLineNo">042</span>}<a name="line.42"></a>
 
 
 

@@ -61,120 +61,114 @@
 <span class="sourceLineNo">053</span>        private static final Method getStatementMethod = Methods.getMethod(ResultSet.class, "getStatement");<a name="line.53"></a>
 <span class="sourceLineNo">054</span>        <a name="line.54"></a>
 <span class="sourceLineNo">055</span>        /**<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         * @param statement the statement that created this result set<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         * @param proxy the invocation handler of the statement that created this result set<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * @param invoker the invoker that was used to create this result set<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * @param resultSetMap a map of database to underlying result set<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * @param transactionContext <a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * @param fileSupport support for streams<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         * @throws Exception<a name="line.62"></a>
-<span class="sourceLineNo">063</span>         */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        public ResultSetInvocationHandler(ResultSetProxyFactory&lt;Z, D, S&gt; factory)<a name="line.64"></a>
+<span class="sourceLineNo">056</span>         * @param factory a factory for creating result set proxies<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public ResultSetInvocationHandler(ResultSetProxyFactory&lt;Z, D, S&gt; factory)<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                super(ResultSet.class, factory, getStatementMethod);<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        @Override<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        protected ProxyFactoryFactory&lt;Z, D, ResultSet, SQLException, ?, ? extends Exception&gt; getProxyFactoryFactory(ResultSet object, Method method, Object... parameters) throws SQLException<a name="line.64"></a>
 <span class="sourceLineNo">065</span>        {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                super(ResultSet.class, factory, getStatementMethod);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        }<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>        @Override<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        protected ProxyFactoryFactory&lt;Z, D, ResultSet, SQLException, ?, ? extends Exception&gt; getProxyFactoryFactory(ResultSet object, Method method, Object... parameters) throws SQLException<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                if (getArrayMethodSet.contains(method))<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        return new ArrayProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                if (getBlobMethodSet.contains(method))<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                {<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        return new BlobProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                }<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                if (getClobMethodSet.contains(method))<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                {<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                        return new ClobProxyFactoryFactory&lt;Z, D, ResultSet, Clob&gt;(Clob.class, this.getProxyFactory().locatorsUpdateCopy());<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                }<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                if (getNClobMethodSet.contains(method))<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                        return new ClobProxyFactoryFactory&lt;Z, D, ResultSet, NClob&gt;(NClob.class, this.getProxyFactory().locatorsUpdateCopy());<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                }<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                if (getRefMethodSet.contains(method))<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        return new RefProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                }<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                if (getSQLXMLMethodSet.contains(method))<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        return new SQLXMLProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                }<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                <a name="line.96"></a>
-<span class="sourceLineNo">097</span>                return super.getProxyFactoryFactory(object, method, parameters);<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>        @Override<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        protected InvocationStrategy getInvocationStrategy(ResultSet resultSet, Method method, Object... parameters) throws SQLException<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                if (driverReadMethodSet.contains(method))<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        return InvocationStrategies.INVOKE_ON_ANY;<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                }<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                <a name="line.107"></a>
-<span class="sourceLineNo">108</span>                if (driverWriteMethodSet.contains(method) || method.equals(closeMethod))<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        return InvocationStrategies.INVOKE_ON_EXISTING;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                <a name="line.112"></a>
-<span class="sourceLineNo">113</span>                if (transactionalWriteMethodSet.contains(method))<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                        return this.getProxyFactory().getTransactionContext().start(InvocationStrategies.TRANSACTION_INVOKE_ON_ALL, this.getProxyFactory().getParentProxy().getConnection());<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                }<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                <a name="line.117"></a>
-<span class="sourceLineNo">118</span>                if (isGetMethod(method))<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                {<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                        return InvocationStrategies.INVOKE_ON_ANY;<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                }<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                <a name="line.122"></a>
-<span class="sourceLineNo">123</span>                if (isUpdateMethod(method))<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        return InvocationStrategies.INVOKE_ON_EXISTING;<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                }<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                <a name="line.127"></a>
-<span class="sourceLineNo">128</span>                return super.getInvocationStrategy(resultSet, method, parameters);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
-<span class="sourceLineNo">130</span><a name="line.130"></a>
-<span class="sourceLineNo">131</span>        @Override<a name="line.131"></a>
-<span class="sourceLineNo">132</span>        protected &lt;R&gt; Invoker&lt;Z, D, ResultSet, R, SQLException&gt; getInvoker(ResultSet results, final Method method, final Object... parameters) throws SQLException<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                if (isUpdateMethod(method) &amp;&amp; (parameters.length &gt; 1))<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                        return this.getInvoker(method.getParameterTypes()[1], 1, results, method, parameters);<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                }<a name="line.137"></a>
-<span class="sourceLineNo">138</span>                <a name="line.138"></a>
-<span class="sourceLineNo">139</span>                return super.getInvoker(results, method, parameters);<a name="line.139"></a>
-<span class="sourceLineNo">140</span>        }<a name="line.140"></a>
-<span class="sourceLineNo">141</span><a name="line.141"></a>
-<span class="sourceLineNo">142</span>        @Override<a name="line.142"></a>
-<span class="sourceLineNo">143</span>        protected &lt;R&gt; void postInvoke(Invoker&lt;Z, D, ResultSet, R, SQLException&gt; invoker, ResultSet results, Method method, Object... parameters)<a name="line.143"></a>
-<span class="sourceLineNo">144</span>        {<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                if (method.equals(closeMethod))<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                {<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                        this.getProxyFactory().remove();<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                }<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                <a name="line.149"></a>
-<span class="sourceLineNo">150</span>                if (driverWriteMethodSet.contains(method) || isUpdateMethod(method))<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                {<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                        this.getProxyFactory().addInvoker(invoker);<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                }<a name="line.153"></a>
-<span class="sourceLineNo">154</span>        }<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        <a name="line.155"></a>
-<span class="sourceLineNo">156</span>        private static boolean isGetMethod(Method method)<a name="line.156"></a>
-<span class="sourceLineNo">157</span>        {<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                Class&lt;?&gt;[] types = method.getParameterTypes();<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                <a name="line.159"></a>
-<span class="sourceLineNo">160</span>                return method.getName().startsWith("get") &amp;&amp; (types != null) &amp;&amp; (types.length &gt; 0) &amp;&amp; (types[0].equals(String.class) || types[0].equals(Integer.TYPE));<a name="line.160"></a>
-<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
-<span class="sourceLineNo">162</span>        <a name="line.162"></a>
-<span class="sourceLineNo">163</span>        private static boolean isUpdateMethod(Method method)<a name="line.163"></a>
-<span class="sourceLineNo">164</span>        {<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                Class&lt;?&gt;[] types = method.getParameterTypes();<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                <a name="line.166"></a>
-<span class="sourceLineNo">167</span>                return method.getName().startsWith("update") &amp;&amp; (types != null) &amp;&amp; (types.length &gt; 0) &amp;&amp; (types[0].equals(String.class) || types[0].equals(Integer.TYPE));<a name="line.167"></a>
-<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
-<span class="sourceLineNo">169</span>}<a name="line.169"></a>
+<span class="sourceLineNo">066</span>                if (getArrayMethodSet.contains(method))<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        return new ArrayProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                if (getBlobMethodSet.contains(method))<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        return new BlobProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                if (getClobMethodSet.contains(method))<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        return new ClobProxyFactoryFactory&lt;Z, D, ResultSet, Clob&gt;(Clob.class, this.getProxyFactory().locatorsUpdateCopy());<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                if (getNClobMethodSet.contains(method))<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        return new ClobProxyFactoryFactory&lt;Z, D, ResultSet, NClob&gt;(NClob.class, this.getProxyFactory().locatorsUpdateCopy());<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                if (getRefMethodSet.contains(method))<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        return new RefProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                if (getSQLXMLMethodSet.contains(method))<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        return new SQLXMLProxyFactoryFactory&lt;Z, D, ResultSet&gt;(this.getProxyFactory().locatorsUpdateCopy());<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                <a name="line.90"></a>
+<span class="sourceLineNo">091</span>                return super.getProxyFactoryFactory(object, method, parameters);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        }<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>        @Override<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        protected InvocationStrategy getInvocationStrategy(ResultSet resultSet, Method method, Object... parameters) throws SQLException<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                if (driverReadMethodSet.contains(method))<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        return InvocationStrategies.INVOKE_ON_ANY;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                <a name="line.101"></a>
+<span class="sourceLineNo">102</span>                if (driverWriteMethodSet.contains(method) || method.equals(closeMethod))<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        return InvocationStrategies.INVOKE_ON_EXISTING;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                <a name="line.106"></a>
+<span class="sourceLineNo">107</span>                if (transactionalWriteMethodSet.contains(method))<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        return this.getProxyFactory().getTransactionContext().start(InvocationStrategies.TRANSACTION_INVOKE_ON_ALL, this.getProxyFactory().getParentProxy().getConnection());<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                <a name="line.111"></a>
+<span class="sourceLineNo">112</span>                if (isGetMethod(method))<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        return InvocationStrategies.INVOKE_ON_ANY;<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                <a name="line.116"></a>
+<span class="sourceLineNo">117</span>                if (isUpdateMethod(method))<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        return InvocationStrategies.INVOKE_ON_EXISTING;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                <a name="line.121"></a>
+<span class="sourceLineNo">122</span>                return super.getInvocationStrategy(resultSet, method, parameters);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>        @Override<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        protected &lt;R&gt; Invoker&lt;Z, D, ResultSet, R, SQLException&gt; getInvoker(ResultSet results, final Method method, final Object... parameters) throws SQLException<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (isUpdateMethod(method) &amp;&amp; (parameters.length &gt; 1))<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        return this.getInvoker(method.getParameterTypes()[1], 1, results, method, parameters);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                <a name="line.132"></a>
+<span class="sourceLineNo">133</span>                return super.getInvoker(results, method, parameters);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        @Override<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        protected &lt;R&gt; void postInvoke(Invoker&lt;Z, D, ResultSet, R, SQLException&gt; invoker, ResultSet results, Method method, Object... parameters)<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                if (method.equals(closeMethod))<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        this.getProxyFactory().remove();<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                <a name="line.143"></a>
+<span class="sourceLineNo">144</span>                if (driverWriteMethodSet.contains(method) || isUpdateMethod(method))<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        this.getProxyFactory().addInvoker(invoker);<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        <a name="line.149"></a>
+<span class="sourceLineNo">150</span>        private static boolean isGetMethod(Method method)<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                Class&lt;?&gt;[] types = method.getParameterTypes();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                <a name="line.153"></a>
+<span class="sourceLineNo">154</span>                return method.getName().startsWith("get") &amp;&amp; (types != null) &amp;&amp; (types.length &gt; 0) &amp;&amp; (types[0].equals(String.class) || types[0].equals(Integer.TYPE));<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        <a name="line.156"></a>
+<span class="sourceLineNo">157</span>        private static boolean isUpdateMethod(Method method)<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                Class&lt;?&gt;[] types = method.getParameterTypes();<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                <a name="line.160"></a>
+<span class="sourceLineNo">161</span>                return method.getName().startsWith("update") &amp;&amp; (types != null) &amp;&amp; (types.length &gt; 0) &amp;&amp; (types[0].equals(String.class) || types[0].equals(Integer.TYPE));<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>}<a name="line.163"></a>
 
 
 
