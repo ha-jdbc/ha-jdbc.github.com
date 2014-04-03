@@ -65,16 +65,16 @@
 <span class="sourceLineNo">057</span>         * {@inheritDoc}<a name="line.57"></a>
 <span class="sourceLineNo">058</span>         */<a name="line.58"></a>
 <span class="sourceLineNo">059</span>        @Override<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        public &lt;Z, D extends Database&lt;Z&gt;, T, R, E extends Exception&gt; SortedMap&lt;D, R&gt; invoke(ProxyFactory&lt;Z, D, T, E&gt; map, Invoker&lt;Z, D, T, R, E&gt; invoker) throws E<a name="line.60"></a>
+<span class="sourceLineNo">060</span>        public &lt;Z, D extends Database&lt;Z&gt;, T, R, E extends Exception&gt; SortedMap&lt;D, R&gt; invoke(ProxyFactory&lt;Z, D, T, E&gt; factory, Invoker&lt;Z, D, T, R, E&gt; invoker) throws E<a name="line.60"></a>
 <span class="sourceLineNo">061</span>        {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                Map.Entry&lt;SortedMap&lt;D, R&gt;, SortedMap&lt;D, E&gt;&gt; results = this.collector.collectResults(map, invoker);<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                ExceptionFactory&lt;E&gt; exceptionFactory = map.getExceptionFactory();<a name="line.63"></a>
+<span class="sourceLineNo">062</span>                Map.Entry&lt;SortedMap&lt;D, R&gt;, SortedMap&lt;D, E&gt;&gt; results = this.collector.collectResults(factory, invoker);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                ExceptionFactory&lt;E&gt; exceptionFactory = factory.getExceptionFactory();<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                SortedMap&lt;D, R&gt; resultMap = results.getKey();<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                SortedMap&lt;D, E&gt; exceptionMap = results.getValue();<a name="line.65"></a>
 <span class="sourceLineNo">066</span>                <a name="line.66"></a>
 <span class="sourceLineNo">067</span>                if (!exceptionMap.isEmpty())<a name="line.67"></a>
 <span class="sourceLineNo">068</span>                {<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        DatabaseCluster&lt;Z, D&gt; cluster = map.getDatabaseCluster();<a name="line.69"></a>
+<span class="sourceLineNo">069</span>                        DatabaseCluster&lt;Z, D&gt; cluster = factory.getDatabaseCluster();<a name="line.69"></a>
 <span class="sourceLineNo">070</span>                        Dialect dialect = cluster.getDialect();<a name="line.70"></a>
 <span class="sourceLineNo">071</span>                        <a name="line.71"></a>
 <span class="sourceLineNo">072</span>                        List&lt;D&gt; failedDatabases = new ArrayList&lt;D&gt;(exceptionMap.size());<a name="line.72"></a>

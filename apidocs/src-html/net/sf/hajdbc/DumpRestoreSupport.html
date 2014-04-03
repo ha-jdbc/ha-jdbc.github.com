@@ -27,15 +27,17 @@
 <span class="sourceLineNo">019</span><a name="line.19"></a>
 <span class="sourceLineNo">020</span>import java.io.File;<a name="line.20"></a>
 <span class="sourceLineNo">021</span><a name="line.21"></a>
-<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
-<span class="sourceLineNo">023</span> * @author Paul Ferraro<a name="line.23"></a>
-<span class="sourceLineNo">024</span> */<a name="line.24"></a>
-<span class="sourceLineNo">025</span>public interface DumpRestoreSupport<a name="line.25"></a>
-<span class="sourceLineNo">026</span>{<a name="line.26"></a>
-<span class="sourceLineNo">027</span>        ProcessBuilder createDumpProcess(ConnectionProperties properties, File file);<a name="line.27"></a>
-<span class="sourceLineNo">028</span>        <a name="line.28"></a>
-<span class="sourceLineNo">029</span>        ProcessBuilder createRestoreProcess(ConnectionProperties properties, File file);<a name="line.29"></a>
-<span class="sourceLineNo">030</span>}<a name="line.30"></a>
+<span class="sourceLineNo">022</span>import net.sf.hajdbc.codec.Decoder;<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>/**<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * @author Paul Ferraro<a name="line.25"></a>
+<span class="sourceLineNo">026</span> */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>public interface DumpRestoreSupport<a name="line.27"></a>
+<span class="sourceLineNo">028</span>{<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void dump(D database, Decoder decoder, File file) throws Exception;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void restore(D database, Decoder decoder, File file) throws Exception;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>}<a name="line.32"></a>
 
 
 

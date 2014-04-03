@@ -72,26 +72,27 @@
 <span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
 <span class="sourceLineNo">065</span>         * Connects to the database using the specified connection factory.<a name="line.65"></a>
 <span class="sourceLineNo">066</span>         * @param connectionSource a factory object for creating connections<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * @return a database connection<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * @throws SQLException if connection fails<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        Connection connect(Z connectionSource, String password) throws SQLException;<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        <a name="line.71"></a>
-<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         * Factory method for creating a connection factory object for this database.<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         * @return a connection factory object<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         * @throws IllegalArgumentException if connection factory could not be created<a name="line.75"></a>
-<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        Z createConnectionSource();<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        <a name="line.78"></a>
-<span class="sourceLineNo">079</span>        boolean isDirty();<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        <a name="line.80"></a>
-<span class="sourceLineNo">081</span>        void clean();<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        <a name="line.82"></a>
-<span class="sourceLineNo">083</span>        boolean isActive();<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        <a name="line.84"></a>
-<span class="sourceLineNo">085</span>        void setActive(boolean active);<a name="line.85"></a>
-<span class="sourceLineNo">086</span>}<a name="line.86"></a>
+<span class="sourceLineNo">067</span>         * @param password a decoded password<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * @return a database connection<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * @throws SQLException if connection fails<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        Connection connect(Z connectionSource, String password) throws SQLException;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        <a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /**<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * Returns a connection source for this database.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * @return a connection source<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * @throws IllegalArgumentException if connection source could not be created<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        Z getConnectionSource();<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        <a name="line.79"></a>
+<span class="sourceLineNo">080</span>        boolean isDirty();<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        <a name="line.81"></a>
+<span class="sourceLineNo">082</span>        void clean();<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        <a name="line.83"></a>
+<span class="sourceLineNo">084</span>        boolean isActive();<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        <a name="line.85"></a>
+<span class="sourceLineNo">086</span>        void setActive(boolean active);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>}<a name="line.87"></a>
 
 
 

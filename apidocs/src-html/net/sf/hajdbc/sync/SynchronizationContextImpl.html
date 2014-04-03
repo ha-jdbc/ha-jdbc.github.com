@@ -96,7 +96,7 @@
 <span class="sourceLineNo">088</span>                <a name="line.88"></a>
 <span class="sourceLineNo">089</span>                if (entry == null)<a name="line.89"></a>
 <span class="sourceLineNo">090</span>                {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        Connection connection = database.connect(database.createConnectionSource(), database.decodePassword(this.cluster.getDecoder()));<a name="line.91"></a>
+<span class="sourceLineNo">091</span>                        Connection connection = database.connect(database.getConnectionSource(), database.decodePassword(this.cluster.getDecoder()));<a name="line.91"></a>
 <span class="sourceLineNo">092</span>                        entry = new AbstractMap.SimpleImmutableEntry&lt;Connection, Boolean&gt;(connection, connection.getAutoCommit());<a name="line.92"></a>
 <span class="sourceLineNo">093</span>                        <a name="line.93"></a>
 <span class="sourceLineNo">094</span>                        this.connectionMap.put(database, entry);<a name="line.94"></a>

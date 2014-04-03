@@ -580,7 +580,7 @@
 <span class="sourceLineNo">572</span>        @Override<a name="line.572"></a>
 <span class="sourceLineNo">573</span>        public void start() throws Exception<a name="line.573"></a>
 <span class="sourceLineNo">574</span>        {<a name="line.574"></a>
-<span class="sourceLineNo">575</span>                this.driver = this.database.createConnectionSource();<a name="line.575"></a>
+<span class="sourceLineNo">575</span>                this.driver = this.database.getConnectionSource();<a name="line.575"></a>
 <span class="sourceLineNo">576</span>                this.password = this.database.decodePassword(this.cluster.getDecoder());<a name="line.576"></a>
 <span class="sourceLineNo">577</span>                this.pool = this.poolFactory.createPool(new ConnectionPoolProvider(this));<a name="line.577"></a>
 <span class="sourceLineNo">578</span>                <a name="line.578"></a>
