@@ -41,10 +41,10 @@
 <span class="sourceLineNo">033</span><a name="line.33"></a>
 <span class="sourceLineNo">034</span>        /**<a name="line.34"></a>
 <span class="sourceLineNo">035</span>         * {@inheritDoc}<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         * @see net.sf.hajdbc.state.distributed.StateCommand#execute(net.sf.hajdbc.Database, net.sf.hajdbc.DatabaseCluster, net.sf.hajdbc.state.StateManager)<a name="line.36"></a>
+<span class="sourceLineNo">036</span>         * @see net.sf.hajdbc.state.distributed.StateCommand#execute(net.sf.hajdbc.DatabaseCluster, net.sf.hajdbc.state.StateManager, net.sf.hajdbc.Database)<a name="line.36"></a>
 <span class="sourceLineNo">037</span>         */<a name="line.37"></a>
 <span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        protected boolean execute(D database, DatabaseCluster&lt;Z, D&gt; cluster, StateManager stateManager)<a name="line.39"></a>
+<span class="sourceLineNo">039</span>        protected boolean execute(DatabaseCluster&lt;Z, D&gt; cluster, StateManager stateManager, D database)<a name="line.39"></a>
 <span class="sourceLineNo">040</span>        {<a name="line.40"></a>
 <span class="sourceLineNo">041</span>                return cluster.activate(database, stateManager);<a name="line.41"></a>
 <span class="sourceLineNo">042</span>        }<a name="line.42"></a>

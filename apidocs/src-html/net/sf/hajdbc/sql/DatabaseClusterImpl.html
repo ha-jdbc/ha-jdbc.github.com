@@ -756,7 +756,7 @@
 <span class="sourceLineNo">748</span>                        {<a name="line.748"></a>
 <span class="sourceLineNo">749</span>                                this.cronExecutor.schedule(new FailureDetectionTask(), failureDetectionExpression);<a name="line.749"></a>
 <span class="sourceLineNo">750</span>                        }<a name="line.750"></a>
-<span class="sourceLineNo">751</span>                                                <a name="line.751"></a>
+<span class="sourceLineNo">751</span>                        <a name="line.751"></a>
 <span class="sourceLineNo">752</span>                        if (autoActivationExpression != null)<a name="line.752"></a>
 <span class="sourceLineNo">753</span>                        {<a name="line.753"></a>
 <span class="sourceLineNo">754</span>                                this.cronExecutor.schedule(new AutoActivationTask(), autoActivationExpression);<a name="line.754"></a>
@@ -791,7 +791,7 @@
 <span class="sourceLineNo">783</span>        public synchronized void stop()<a name="line.783"></a>
 <span class="sourceLineNo">784</span>        {<a name="line.784"></a>
 <span class="sourceLineNo">785</span>                this.active = false;<a name="line.785"></a>
-<span class="sourceLineNo">786</span>                <a name="line.786"></a>
+<span class="sourceLineNo">786</span>/*              Don't do this until we can distinguish between embedded databases, and local databases in a separate processes<a name="line.786"></a>
 <span class="sourceLineNo">787</span>                if (this.balancer != null)<a name="line.787"></a>
 <span class="sourceLineNo">788</span>                {<a name="line.788"></a>
 <span class="sourceLineNo">789</span>                        // Proactively deactivate any local databases<a name="line.789"></a>
@@ -803,7 +803,7 @@
 <span class="sourceLineNo">795</span>                                }<a name="line.795"></a>
 <span class="sourceLineNo">796</span>                        }<a name="line.796"></a>
 <span class="sourceLineNo">797</span>                }<a name="line.797"></a>
-<span class="sourceLineNo">798</span>                <a name="line.798"></a>
+<span class="sourceLineNo">798</span>*/<a name="line.798"></a>
 <span class="sourceLineNo">799</span>                MBeanRegistrar&lt;Z, D&gt; registrar = this.configuration.getMBeanRegistrar();<a name="line.799"></a>
 <span class="sourceLineNo">800</span><a name="line.800"></a>
 <span class="sourceLineNo">801</span>                if (registrar != null)<a name="line.801"></a>

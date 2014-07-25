@@ -34,9 +34,9 @@
 <span class="sourceLineNo">026</span> */<a name="line.26"></a>
 <span class="sourceLineNo">027</span>public interface DumpRestoreSupport<a name="line.27"></a>
 <span class="sourceLineNo">028</span>{<a name="line.28"></a>
-<span class="sourceLineNo">029</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void dump(D database, Decoder decoder, File file) throws Exception;<a name="line.29"></a>
+<span class="sourceLineNo">029</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void dump(D database, Decoder decoder, File file, boolean dataOnly) throws Exception;<a name="line.29"></a>
 <span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void restore(D database, Decoder decoder, File file) throws Exception;<a name="line.31"></a>
+<span class="sourceLineNo">031</span>        &lt;Z, D extends Database&lt;Z&gt;&gt; void restore(D database, Decoder decoder, File file, boolean dataOnly) throws Exception;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>}<a name="line.32"></a>
 
 

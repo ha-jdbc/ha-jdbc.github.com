@@ -253,60 +253,83 @@
 <span class="sourceLineNo">245</span>        }<a name="line.245"></a>
 <span class="sourceLineNo">246</span><a name="line.246"></a>
 <span class="sourceLineNo">247</span>        @Override<a name="line.247"></a>
-<span class="sourceLineNo">248</span>        public &lt;Z, D extends Database&lt;Z&gt;&gt; void dump(D database, Decoder decoder, File file) throws Exception<a name="line.248"></a>
+<span class="sourceLineNo">248</span>        public &lt;Z, D extends Database&lt;Z&gt;&gt; void dump(D database, Decoder decoder, File file, boolean dataOnly) throws Exception<a name="line.248"></a>
 <span class="sourceLineNo">249</span>        {<a name="line.249"></a>
 <span class="sourceLineNo">250</span>                ConnectionProperties properties = this.getConnectionProperties(database, decoder);<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                Processes.run(setPassword(new ProcessBuilder("pg_dump", "-h", properties.getHost(), "-p", properties.getPort(), "-U", properties.getUser(), "-f", file.getPath(), "-F", "tar", properties.getDatabase()), properties));<a name="line.251"></a>
-<span class="sourceLineNo">252</span>        }<a name="line.252"></a>
-<span class="sourceLineNo">253</span><a name="line.253"></a>
-<span class="sourceLineNo">254</span>        @Override<a name="line.254"></a>
-<span class="sourceLineNo">255</span>        public &lt;Z, D extends Database&lt;Z&gt;&gt; void restore(D database, Decoder decoder, File file) throws Exception<a name="line.255"></a>
-<span class="sourceLineNo">256</span>        {<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                ConnectionProperties properties = this.getConnectionProperties(database, decoder);<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                Processes.run(setPassword(new ProcessBuilder("pg_restore", "-h", properties.getHost(), "-p", properties.getPort(), "-U", properties.getUser(), "-d", properties.getDatabase(), "-c", file.getPath()), properties));<a name="line.258"></a>
-<span class="sourceLineNo">259</span>        }<a name="line.259"></a>
-<span class="sourceLineNo">260</span>        <a name="line.260"></a>
-<span class="sourceLineNo">261</span>        private static ProcessBuilder setPassword(ProcessBuilder builder, ConnectionProperties properties)<a name="line.261"></a>
-<span class="sourceLineNo">262</span>        {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                String password = properties.getPassword();<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                if ((password != null) &amp;&amp; !PASSWORD_FILE.exists())<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                {<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                        builder.environment().put("PGPASSWORD", properties.getPassword());<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                }<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                <a name="line.268"></a>
-<span class="sourceLineNo">269</span>                return builder;<a name="line.269"></a>
-<span class="sourceLineNo">270</span>        }<a name="line.270"></a>
-<span class="sourceLineNo">271</span><a name="line.271"></a>
-<span class="sourceLineNo">272</span>        /**<a name="line.272"></a>
-<span class="sourceLineNo">273</span>         * {@inheritDoc}<a name="line.273"></a>
-<span class="sourceLineNo">274</span>         * @see net.sf.hajdbc.dialect.StandardDialect#getTriggerSupport()<a name="line.274"></a>
-<span class="sourceLineNo">275</span>         */<a name="line.275"></a>
-<span class="sourceLineNo">276</span>        @Override<a name="line.276"></a>
-<span class="sourceLineNo">277</span>        public TriggerSupport getTriggerSupport()<a name="line.277"></a>
-<span class="sourceLineNo">278</span>        {<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                return this;<a name="line.279"></a>
-<span class="sourceLineNo">280</span>        }<a name="line.280"></a>
-<span class="sourceLineNo">281</span><a name="line.281"></a>
-<span class="sourceLineNo">282</span>        /**<a name="line.282"></a>
-<span class="sourceLineNo">283</span>         * {@inheritDoc}<a name="line.283"></a>
-<span class="sourceLineNo">284</span>         * @see net.sf.hajdbc.dialect.StandardDialect#createForeignKeyConstraintFormat()<a name="line.284"></a>
-<span class="sourceLineNo">285</span>         */<a name="line.285"></a>
-<span class="sourceLineNo">286</span>        @Override<a name="line.286"></a>
-<span class="sourceLineNo">287</span>        protected String createTriggerFormat()<a name="line.287"></a>
-<span class="sourceLineNo">288</span>        {<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                return "CREATE FUNCTION {0}_action() BEGIN {4} END; CREATE TRIGGER {0} {1} {2} ON {3} FOR EACH ROW EXECUTE PROCEDURE {0}_action()";<a name="line.289"></a>
-<span class="sourceLineNo">290</span>        }<a name="line.290"></a>
-<span class="sourceLineNo">291</span><a name="line.291"></a>
-<span class="sourceLineNo">292</span>        /**<a name="line.292"></a>
-<span class="sourceLineNo">293</span>         * {@inheritDoc}<a name="line.293"></a>
-<span class="sourceLineNo">294</span>         * @see net.sf.hajdbc.dialect.StandardDialect#dropTriggerFormat()<a name="line.294"></a>
-<span class="sourceLineNo">295</span>         */<a name="line.295"></a>
-<span class="sourceLineNo">296</span>        @Override<a name="line.296"></a>
-<span class="sourceLineNo">297</span>        protected String dropTriggerFormat()<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        {<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                return "DROP TRIGGER {0} ON {1}; DROP FUNCTION {0}_action()";<a name="line.299"></a>
-<span class="sourceLineNo">300</span>        }<a name="line.300"></a>
-<span class="sourceLineNo">301</span>}<a name="line.301"></a>
+<span class="sourceLineNo">251</span>                ProcessBuilder builder = new ProcessBuilder("pg_dump");<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                List&lt;String&gt; args = builder.command();<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                args.add("--host=" + properties.getHost());<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                args.add("--port=" + properties.getPort());<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                args.add("--username=" + properties.getUser());<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                args.add("--no-password");<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                args.add("--file=" + file.getPath());<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                args.add("--format=tar");<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                args.add(properties.getDatabase());<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                Processes.run(setPassword(builder, properties));<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>        @Override<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        public &lt;Z, D extends Database&lt;Z&gt;&gt; void restore(D database, Decoder decoder, File file, boolean dataOnly) throws Exception<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                ConnectionProperties properties = this.getConnectionProperties(database, decoder);<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                ProcessBuilder builder = new ProcessBuilder("pg_restore");<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                List&lt;String&gt; args = builder.command();<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                args.add("--host=" + properties.getHost());<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                args.add("--port=" + properties.getPort());<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                args.add("--username=" + properties.getUser());<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                args.add("--no-password");<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                args.add("--dbname=" + properties.getDatabase());<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                args.add("--clean");<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                if (dataOnly)<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                {<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                        args.add("--data-only");<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                        args.add("--disable-triggers"); // Used to prevent integrity constraints during restoration of data<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                        args.add("--superuser=" + properties.getUser()); // Required by --disable-triggers<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                }<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                args.add(file.getPath());<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                Processes.run(setPassword(builder, properties));<a name="line.282"></a>
+<span class="sourceLineNo">283</span>        }<a name="line.283"></a>
+<span class="sourceLineNo">284</span>        <a name="line.284"></a>
+<span class="sourceLineNo">285</span>        private static ProcessBuilder setPassword(ProcessBuilder builder, ConnectionProperties properties)<a name="line.285"></a>
+<span class="sourceLineNo">286</span>        {<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                String password = properties.getPassword();<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                if ((password != null) &amp;&amp; !PASSWORD_FILE.exists())<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                        Processes.environment(builder).put("PGPASSWORD", properties.getPassword());<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                }<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                return builder;<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        }<a name="line.293"></a>
+<span class="sourceLineNo">294</span><a name="line.294"></a>
+<span class="sourceLineNo">295</span>        /**<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         * {@inheritDoc}<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * @see net.sf.hajdbc.dialect.StandardDialect#getTriggerSupport()<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         */<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        @Override<a name="line.299"></a>
+<span class="sourceLineNo">300</span>        public TriggerSupport getTriggerSupport()<a name="line.300"></a>
+<span class="sourceLineNo">301</span>        {<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                return this;<a name="line.302"></a>
+<span class="sourceLineNo">303</span>        }<a name="line.303"></a>
+<span class="sourceLineNo">304</span><a name="line.304"></a>
+<span class="sourceLineNo">305</span>        /**<a name="line.305"></a>
+<span class="sourceLineNo">306</span>         * {@inheritDoc}<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         * @see net.sf.hajdbc.dialect.StandardDialect#createForeignKeyConstraintFormat()<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         */<a name="line.308"></a>
+<span class="sourceLineNo">309</span>        @Override<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        protected String createTriggerFormat()<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        {<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                return "CREATE FUNCTION {0}_action() BEGIN {4} END; CREATE TRIGGER {0} {1} {2} ON {3} FOR EACH ROW EXECUTE PROCEDURE {0}_action()";<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        }<a name="line.313"></a>
+<span class="sourceLineNo">314</span><a name="line.314"></a>
+<span class="sourceLineNo">315</span>        /**<a name="line.315"></a>
+<span class="sourceLineNo">316</span>         * {@inheritDoc}<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * @see net.sf.hajdbc.dialect.StandardDialect#dropTriggerFormat()<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         */<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        @Override<a name="line.319"></a>
+<span class="sourceLineNo">320</span>        protected String dropTriggerFormat()<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                return "DROP TRIGGER {0} ON {1}; DROP FUNCTION {0}_action()";<a name="line.322"></a>
+<span class="sourceLineNo">323</span>        }<a name="line.323"></a>
+<span class="sourceLineNo">324</span>}<a name="line.324"></a>
 
 
 
